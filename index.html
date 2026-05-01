@@ -87,6 +87,24 @@
             Amount
             <input type="number" id="jobAmount" placeholder="550" min="0" step="0.01" required />
           </label>
+          <label>
+            Job Status
+            <select id="jobStatus">
+              <option value="requested">Requested</option>
+              <option value="scheduled" selected>Scheduled</option>
+              <option value="in_progress">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="canceled">Canceled</option>
+            </select>
+          </label>
+          <label>
+            Payment Status
+            <select id="paymentStatus">
+              <option value="unpaid" selected>Unpaid</option>
+              <option value="partial">Partial</option>
+              <option value="paid">Paid</option>
+            </select>
+          </label>
           <button class="primary-button" type="submit">Save Job</button>
         </form>
 

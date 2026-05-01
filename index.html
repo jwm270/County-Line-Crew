@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>County Line Crew</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">County Line Crew</p>
+        <h1>Schedule and track property work.</h1>
+      </div>
+      <button class="icon-button" aria-label="Settings">☰</button>
+    </header>
+
+    <main>
+      <section class="hero-card">
+        <p class="hero-label">Today</p>
+        <h2>3 jobs scheduled</h2>
+        <p>Mowing, cleanup, and handyman work in one simple phone dashboard.</p>
+        <button class="primary-button" id="quickAddJob">Add New Job</button>
+      </section>
+
+      <section class="quick-actions" aria-label="Quick actions">
+        <button data-screen="jobs">Jobs</button>
+        <button data-screen="customers">Customers</button>
+        <button data-screen="invoice">Invoice</button>
+      </section>
+
+      <section class="screen active" id="screen-home">
+        <div class="section-heading">
+          <h2>Dashboard</h2>
+          <span>Prototype</span>
+        </div>
+
+        <div class="stat-grid">
+          <article class="stat-card">
+            <strong>3</strong>
+            <span>Open Jobs</span>
+          </article>
+          <article class="stat-card">
+            <strong>$1,250</strong>
+            <span>Unpaid</span>
+          </article>
+        </div>
+
+        <article class="job-card">
+          <div>
+            <h3>Fairgrounds mowing</h3>
+            <p>Batesville, AR · $550 · Scheduled</p>
+          </div>
+          <span class="status-badge">Today</span>
+        </article>
+      </section>
+
+      <section class="screen" id="screen-jobs">
+        <div class="section-heading">
+          <h2>Jobs</h2>
+          <span>Work orders</span>
+        </div>
+
+        <form class="card-form" id="jobForm">
+          <label>
+            Customer
+            <input type="text" id="customerName" placeholder="Customer name" required />
+          </label>
+          <label>
+            Service
+            <select id="serviceType">
+              <option>Mowing</option>
+              <option>Cleanup</option>
+              <option>Handyman</option>
+              <option>Hauling</option>
+              <option>Custom work</option>
+            </select>
+          </label>
+          <label>
+            Date
+            <input type="date" id="jobDate" required />
+          </label>
+          <label>
+            Amount
+            <input type="number" id="jobAmount" placeholder="550" min="0" step="0.01" required />
+          </label>
+          <button class="primary-button" type="submit">Save Job</button>
+        </form>
+
+        <div id="jobList" class="list-stack"></div>
+      </section>
+
+      <section class="screen" id="screen-customers">
+        <div class="section-heading">
+          <h2>Customers</h2>
+          <span>Contacts</span>
+        </div>
+        <article class="job-card">
+          <div>
+            <h3>County Fair Board</h3>
+            <p>Fairgrounds · Batesville, AR 72501</p>
+          </div>
+          <span class="status-badge">Active</span>
+        </article>
+      </section>
+
+      <section class="screen" id="screen-invoice">
+        <div class="section-heading">
+          <h2>Invoice</h2>
+          <span>Preview</span>
+        </div>
+        <article class="invoice-card">
+          <p class="eyebrow">Invoice Preview</p>
+          <h2>County Fair Board</h2>
+          <p>Fairgrounds mowing</p>
+          <div class="invoice-row"><span>Date</span><strong>04/24/2026</strong></div>
+          <div class="invoice-row"><span>Amount</span><strong>$550.00</strong></div>
+          <button class="secondary-button">Print Invoice</button>
+        </article>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Main navigation">
+      <button class="active" data-screen="home">Home</button>
+      <button data-screen="jobs">Jobs</button>
+      <button data-screen="customers">Customers</button>
+      <button data-screen="invoice">Invoice</button>
+    </nav>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

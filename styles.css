@@ -34,6 +34,10 @@ button {
   cursor: pointer;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .app-shell {
   max-width: 480px;
   min-height: 100vh;
@@ -67,12 +71,14 @@ button {
 }
 
 .icon-button {
-  width: 42px;
+  min-width: 64px;
   height: 42px;
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--card);
-  font-size: 1.2rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-dark);
 }
 
 .hero-card,
@@ -127,6 +133,10 @@ button {
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin-bottom: 18px;
+}
+
+.public-actions {
+  grid-template-columns: 1fr;
 }
 
 .quick-actions button {
@@ -311,13 +321,20 @@ button {
   transform: translateX(-50%);
   width: min(448px, calc(100% - 24px));
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
   gap: 6px;
   padding: 8px;
   border: 1px solid var(--line);
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.95);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14);
+}
+
+.public-nav {
+  grid-template-columns: 1fr;
+}
+
+.admin-nav {
+  grid-template-columns: repeat(6, 1fr);
 }
 
 .bottom-nav button {
@@ -327,6 +344,7 @@ button {
   background: transparent;
   color: var(--muted);
   font-weight: 700;
+  font-size: 0.78rem;
 }
 
 .bottom-nav button.active {

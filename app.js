@@ -1,5 +1,10 @@
 const screens = document.querySelectorAll('.screen');
 const navButtons = document.querySelectorAll('[data-screen]');
+const adminAccessButton = document.getElementById('adminAccessButton');
+const publicActions = document.querySelector('.public-actions');
+const adminActions = document.querySelector('.admin-actions');
+const publicNav = document.querySelector('.public-nav');
+const adminNav = document.querySelector('.admin-nav');
 const quickAddJobButton = document.getElementById('quickAddJob');
 const heroJobCount = document.getElementById('heroJobCount');
 const openJobCount = document.getElementById('openJobCount');
@@ -18,6 +23,8 @@ const invoiceCard = document.getElementById('invoiceCard');
 const jobStorageKey = 'countyLineCrewJobs';
 const customerStorageKey = 'countyLineCrewCustomers';
 const availabilityStorageKey = 'countyLineCrewAvailability';
+
+let adminMode = false;
 
 const businessInfo = {
   name: 'County Line Crew',
@@ -62,6 +69,10 @@ function saveAvailability(items) {
 }
 
 function setActiveScreen(screenName) {
+  if (!adminMode && screenName !== 'book') {
+    screenName = 'book';
+  }
+
   screens.forEach((screen) => {
     screen.classList.toggle('active', screen.id === `screen-${screenName}`);
   });
@@ -69,6 +80,16 @@ function setActiveScreen(screenName) {
   document.querySelectorAll('.bottom-nav button').forEach((button) => {
     button.classList.toggle('active', button.dataset.screen === screenName);
   });
+}
+
+function setAdminMode(enabled) {
+  adminMode = enabled;
+  publicActions.classList.toggle('hidden', enabled);
+  publicNav.classList.toggle('hidden', enabled);
+  adminActions.classList.toggle('hidden', !enabled);
+  adminNav.classList.toggle('hidden', !enabled);
+  adminAccessButton.textContent = enabled ? 'Public' : 'Admin';
+  setActiveScreen(enabled ? 'home' : 'book');
 }
 
 function formatCurrency(value) {
@@ -385,7 +406,16 @@ navButtons.forEach((button) => {
   });
 });
 
+adminAccessButton.addEventListener('click', () => {
+  setAdminMode(!adminMode);
+});
+
 quickAddJobButton?.addEventListener('click', () => {
+  if (!adminMode) {
+    setActiveScreen('book');
+    return;
+  }
+
   setActiveScreen('jobs');
   jobCustomerSelect.focus();
 });
@@ -508,7 +538,7 @@ customerForm.addEventListener('submit', (event) => {
   renderCustomerOptions();
 });
 
-setActiveScreen('book');
+setAdminMode(false);
 refreshJobViews();
 renderCustomers();
 renderCustomerOptions();

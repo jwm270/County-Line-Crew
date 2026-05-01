@@ -25,7 +25,8 @@ body {
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 
@@ -258,7 +259,8 @@ button {
 }
 
 .card-form input,
-.card-form select {
+.card-form select,
+.card-form textarea {
   width: 100%;
   margin-top: 6px;
   border: 1px solid var(--line);
@@ -266,6 +268,12 @@ button {
   padding: 13px 12px;
   background: #fffdf8;
   color: var(--text);
+}
+
+.card-form textarea {
+  min-height: 96px;
+  resize: vertical;
+  line-height: 1.35;
 }
 
 .list-stack {

@@ -5,6 +5,9 @@ const heroJobCount = document.getElementById('heroJobCount');
 const openJobCount = document.getElementById('openJobCount');
 const unpaidTotal = document.getElementById('unpaidTotal');
 const dashboardJobList = document.getElementById('dashboardJobList');
+const bookingForm = document.getElementById('bookingForm');
+const availabilityForm = document.getElementById('availabilityForm');
+const availabilityList = document.getElementById('availabilityList');
 const jobForm = document.getElementById('jobForm');
 const jobList = document.getElementById('jobList');
 const jobCustomerSelect = document.getElementById('jobCustomerSelect');
@@ -14,6 +17,7 @@ const invoiceCard = document.getElementById('invoiceCard');
 
 const jobStorageKey = 'countyLineCrewJobs';
 const customerStorageKey = 'countyLineCrewCustomers';
+const availabilityStorageKey = 'countyLineCrewAvailability';
 
 const businessInfo = {
   name: 'County Line Crew',
@@ -47,6 +51,14 @@ function getCustomers() {
 
 function saveCustomers(customers) {
   writeStorage(customerStorageKey, customers);
+}
+
+function getAvailability() {
+  return readStorage(availabilityStorageKey);
+}
+
+function saveAvailability(items) {
+  writeStorage(availabilityStorageKey, items);
 }
 
 function setActiveScreen(screenName) {
@@ -123,7 +135,7 @@ function renderDashboard() {
   const unpaidJobs = jobs.filter((job) => job.paymentStatus !== 'paid');
   const unpaidAmount = unpaidJobs.reduce((total, job) => total + Number(job.jobAmount || 0), 0);
 
-  heroJobCount.textContent = `${openJobs.length} ${openJobs.length === 1 ? 'job' : 'jobs'} scheduled`;
+  heroJobCount.textContent = 'Book mowing, cleanup, or property work.';
   openJobCount.textContent = openJobs.length;
   unpaidTotal.textContent = formatCurrency(unpaidAmount);
 
@@ -132,7 +144,7 @@ function renderDashboard() {
       <article class="job-card">
         <div>
           <h3>No jobs yet</h3>
-          <p>Add a customer, then add your first job.</p>
+          <p>Booking requests and admin-created jobs will appear here.</p>
         </div>
       </article>
     `;
@@ -286,6 +298,62 @@ function renderCustomers() {
     .join('');
 }
 
+function renderAvailability() {
+  const availability = getAvailability();
+
+  if (!availability.length) {
+    availabilityList.innerHTML = `
+      <article class="job-card">
+        <div>
+          <h3>No availability saved yet</h3>
+          <p>Employees can save available work blocks here.</p>
+        </div>
+      </article>
+    `;
+    return;
+  }
+
+  availabilityList.innerHTML = availability
+    .map(
+      (item) => `
+        <article class="job-card">
+          <div>
+            <h3>${item.employeeName}</h3>
+            <p>${formatDate(item.availableDate)} · ${item.availableStart} to ${item.availableEnd}</p>
+            <p>${item.notes || 'No notes saved'}</p>
+          </div>
+          <span class="status-badge">Available</span>
+        </article>
+      `
+    )
+    .join('');
+}
+
+function createCustomerFromBooking(booking) {
+  const customers = getCustomers();
+  const existingCustomer = customers.find((customer) => customer.phone === booking.phone);
+
+  if (existingCustomer) {
+    return existingCustomer;
+  }
+
+  const newCustomer = {
+    id: crypto.randomUUID(),
+    name: booking.name,
+    phone: booking.phone,
+    email: booking.email,
+    address: booking.address,
+    notes: 'Created from customer booking request.',
+    createdAt: new Date().toISOString(),
+  };
+
+  customers.unshift(newCustomer);
+  saveCustomers(customers);
+  renderCustomers();
+  renderCustomerOptions();
+  return newCustomer;
+}
+
 function handleJobAction(event) {
   const button = event.target.closest('button[data-action]');
 
@@ -317,13 +385,73 @@ navButtons.forEach((button) => {
   });
 });
 
-quickAddJobButton.addEventListener('click', () => {
+quickAddJobButton?.addEventListener('click', () => {
   setActiveScreen('jobs');
   jobCustomerSelect.focus();
 });
 
 jobList.addEventListener('click', handleJobAction);
 dashboardJobList.addEventListener('click', handleJobAction);
+
+bookingForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const booking = {
+    service: document.getElementById('bookingService').value,
+    preferredEmployee: document.getElementById('bookingPreferredEmployee').value.trim(),
+    requestedDate: document.getElementById('bookingDate').value,
+    requestedTime: document.getElementById('bookingTime').value,
+    name: document.getElementById('bookingName').value.trim(),
+    phone: document.getElementById('bookingPhone').value.trim(),
+    email: document.getElementById('bookingEmail').value.trim(),
+    address: document.getElementById('bookingAddress').value.trim(),
+    notes: document.getElementById('bookingNotes').value.trim(),
+  };
+
+  const customer = createCustomerFromBooking(booking);
+  const jobs = getJobs();
+  const newJob = {
+    id: crypto.randomUUID(),
+    invoiceNumber: createInvoiceNumber(),
+    customerId: customer.id,
+    customerName: customer.name,
+    serviceType: booking.service,
+    description: `${booking.notes}${booking.preferredEmployee ? ` Preferred employee: ${booking.preferredEmployee}.` : ''}`.trim(),
+    jobDate: booking.requestedDate,
+    jobTime: booking.requestedTime,
+    jobAmount: 0,
+    jobStatus: 'requested',
+    paymentStatus: 'unpaid',
+    source: 'customer_booking',
+    createdAt: new Date().toISOString(),
+  };
+
+  jobs.unshift(newJob);
+  saveJobs(jobs);
+  bookingForm.reset();
+  refreshJobViews();
+  alert('Booking request submitted. We will contact you to confirm.');
+});
+
+availabilityForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const availability = getAvailability();
+  const newAvailability = {
+    id: crypto.randomUUID(),
+    employeeName: document.getElementById('employeeName').value.trim(),
+    availableDate: document.getElementById('availableDate').value,
+    availableStart: document.getElementById('availableStart').value,
+    availableEnd: document.getElementById('availableEnd').value,
+    notes: document.getElementById('availabilityNotes').value.trim(),
+    createdAt: new Date().toISOString(),
+  };
+
+  availability.unshift(newAvailability);
+  saveAvailability(availability);
+  availabilityForm.reset();
+  renderAvailability();
+});
 
 jobForm.addEventListener('submit', (event) => {
   event.preventDefault();
@@ -380,7 +508,9 @@ customerForm.addEventListener('submit', (event) => {
   renderCustomerOptions();
 });
 
+setActiveScreen('book');
 refreshJobViews();
 renderCustomers();
 renderCustomerOptions();
+renderAvailability();
 renderInvoice();

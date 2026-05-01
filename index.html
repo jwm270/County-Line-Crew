@@ -96,13 +96,32 @@
           <h2>Customers</h2>
           <span>Contacts</span>
         </div>
-        <article class="job-card">
-          <div>
-            <h3>County Fair Board</h3>
-            <p>Fairgrounds · Batesville, AR 72501</p>
-          </div>
-          <span class="status-badge">Active</span>
-        </article>
+
+        <form class="card-form" id="customerForm">
+          <label>
+            Name
+            <input type="text" id="newCustomerName" placeholder="Customer name" required />
+          </label>
+          <label>
+            Phone
+            <input type="tel" id="newCustomerPhone" placeholder="870-555-1234" />
+          </label>
+          <label>
+            Email
+            <input type="email" id="newCustomerEmail" placeholder="customer@example.com" />
+          </label>
+          <label>
+            Address / Location
+            <input type="text" id="newCustomerAddress" placeholder="Job or billing address" />
+          </label>
+          <label>
+            Notes
+            <input type="text" id="newCustomerNotes" placeholder="Gate code, preferred day, etc." />
+          </label>
+          <button class="primary-button" type="submit">Save Customer</button>
+        </form>
+
+        <div id="customerList" class="list-stack"></div>
       </section>
 
       <section class="screen" id="screen-invoice">

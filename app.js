@@ -6,6 +6,7 @@ const jobList = document.getElementById('jobList');
 const jobCustomerSelect = document.getElementById('jobCustomerSelect');
 const customerForm = document.getElementById('customerForm');
 const customerList = document.getElementById('customerList');
+const invoiceCard = document.getElementById('invoiceCard');
 
 const jobStorageKey = 'countyLineCrewJobs';
 const customerStorageKey = 'countyLineCrewCustomers';
@@ -58,6 +59,14 @@ function formatStatus(value) {
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
+function formatDate(value) {
+  if (!value) {
+    return 'No date set';
+  }
+
+  return new Date(`${value}T00:00:00`).toLocaleDateString('en-US');
+}
+
 function updateJob(jobId, updates) {
   const jobs = getJobs().map((job) => {
     if (job.id !== jobId) {
@@ -79,6 +88,35 @@ function deleteJob(jobId) {
   const jobs = getJobs().filter((job) => job.id !== jobId);
   saveJobs(jobs);
   renderJobs();
+}
+
+function renderInvoice(jobId) {
+  const job = getJobs().find((savedJob) => savedJob.id === jobId);
+  const customer = job
+    ? getCustomers().find((savedCustomer) => savedCustomer.id === job.customerId)
+    : null;
+
+  if (!job) {
+    invoiceCard.innerHTML = `
+      <p class="eyebrow">Invoice Preview</p>
+      <h2>Select a saved job</h2>
+      <p>Use the View Invoice button on a job card to load invoice details here.</p>
+    `;
+    return;
+  }
+
+  invoiceCard.innerHTML = `
+    <p class="eyebrow">Invoice Preview</p>
+    <h2>${job.customerName}</h2>
+    <p>${job.serviceType}</p>
+    <div class="invoice-row"><span>Date</span><strong>${formatDate(job.jobDate)}</strong></div>
+    <div class="invoice-row"><span>Amount</span><strong>${formatCurrency(job.jobAmount)}</strong></div>
+    <div class="invoice-row"><span>Job Status</span><strong>${formatStatus(job.jobStatus || 'scheduled')}</strong></div>
+    <div class="invoice-row"><span>Payment</span><strong>${formatStatus(job.paymentStatus || 'unpaid')}</strong></div>
+    <div class="invoice-row"><span>Phone</span><strong>${customer?.phone || 'Not saved'}</strong></div>
+    <div class="invoice-row"><span>Address</span><strong>${customer?.address || 'Not saved'}</strong></div>
+    <button class="secondary-button" type="button" onclick="window.print()">Print Invoice</button>
+  `;
 }
 
 function renderCustomerOptions() {
@@ -120,12 +158,13 @@ function renderJobs() {
           <div class="job-card-top">
             <div>
               <h3>${job.customerName}</h3>
-              <p>${job.serviceType} · ${job.jobDate} · ${formatCurrency(job.jobAmount)}</p>
+              <p>${job.serviceType} · ${formatDate(job.jobDate)} · ${formatCurrency(job.jobAmount)}</p>
               <p>${formatStatus(job.jobStatus || 'scheduled')} · ${formatStatus(job.paymentStatus || 'unpaid')}</p>
             </div>
             <span class="status-badge">${formatStatus(job.paymentStatus || 'unpaid')}</span>
           </div>
           <div class="job-actions">
+            <button type="button" data-action="view-invoice" data-job-id="${job.id}">View Invoice</button>
             <button type="button" data-action="mark-completed" data-job-id="${job.id}">Mark Completed</button>
             <button type="button" data-action="mark-paid" data-job-id="${job.id}">Mark Paid</button>
             <button class="danger-button" type="button" data-action="delete-job" data-job-id="${job.id}">Delete Job</button>
@@ -182,6 +221,11 @@ jobList.addEventListener('click', (event) => {
 
   if (!button) {
     return;
+  }
+
+  if (button.dataset.action === 'view-invoice') {
+    renderInvoice(button.dataset.jobId);
+    setActiveScreen('invoice');
   }
 
   if (button.dataset.action === 'mark-completed') {
@@ -253,3 +297,4 @@ customerForm.addEventListener('submit', (event) => {
 renderJobs();
 renderCustomers();
 renderCustomerOptions();
+renderInvoice();

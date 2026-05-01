@@ -67,6 +67,15 @@ function formatDate(value) {
   return new Date(`${value}T00:00:00`).toLocaleDateString('en-US');
 }
 
+function createInvoiceNumber() {
+  const nextNumber = getJobs().length + 1;
+  return `CLC-${String(nextNumber).padStart(5, '0')}`;
+}
+
+function getInvoiceNumber(job) {
+  return job.invoiceNumber || `CLC-${job.id.slice(0, 5).toUpperCase()}`;
+}
+
 function updateJob(jobId, updates) {
   const jobs = getJobs().map((job) => {
     if (job.id !== jobId) {
@@ -109,6 +118,7 @@ function renderInvoice(jobId) {
     <p class="eyebrow">Invoice Preview</p>
     <h2>${job.customerName}</h2>
     <p>${job.serviceType}</p>
+    <div class="invoice-row"><span>Invoice #</span><strong>${getInvoiceNumber(job)}</strong></div>
     <div class="invoice-row"><span>Date</span><strong>${formatDate(job.jobDate)}</strong></div>
     <div class="invoice-row"><span>Amount</span><strong>${formatCurrency(job.jobAmount)}</strong></div>
     <div class="invoice-row"><span>Job Status</span><strong>${formatStatus(job.jobStatus || 'scheduled')}</strong></div>
@@ -159,7 +169,7 @@ function renderJobs() {
             <div>
               <h3>${job.customerName}</h3>
               <p>${job.serviceType} · ${formatDate(job.jobDate)} · ${formatCurrency(job.jobAmount)}</p>
-              <p>${formatStatus(job.jobStatus || 'scheduled')} · ${formatStatus(job.paymentStatus || 'unpaid')}</p>
+              <p>${getInvoiceNumber(job)} · ${formatStatus(job.jobStatus || 'scheduled')} · ${formatStatus(job.paymentStatus || 'unpaid')}</p>
             </div>
             <span class="status-badge">${formatStatus(job.paymentStatus || 'unpaid')}</span>
           </div>
@@ -256,6 +266,7 @@ jobForm.addEventListener('submit', (event) => {
   const jobs = getJobs();
   const newJob = {
     id: crypto.randomUUID(),
+    invoiceNumber: createInvoiceNumber(),
     customerId: selectedCustomer.id,
     customerName: selectedCustomer.name,
     serviceType: document.getElementById('serviceType').value,

@@ -3,16 +3,35 @@ const navButtons = document.querySelectorAll('[data-screen]');
 const quickAddJobButton = document.getElementById('quickAddJob');
 const jobForm = document.getElementById('jobForm');
 const jobList = document.getElementById('jobList');
+const customerForm = document.getElementById('customerForm');
+const customerList = document.getElementById('customerList');
 
-const storageKey = 'countyLineCrewJobs';
+const jobStorageKey = 'countyLineCrewJobs';
+const customerStorageKey = 'countyLineCrewCustomers';
+
+function readStorage(key) {
+  const savedItems = localStorage.getItem(key);
+  return savedItems ? JSON.parse(savedItems) : [];
+}
+
+function writeStorage(key, items) {
+  localStorage.setItem(key, JSON.stringify(items));
+}
 
 function getJobs() {
-  const savedJobs = localStorage.getItem(storageKey);
-  return savedJobs ? JSON.parse(savedJobs) : [];
+  return readStorage(jobStorageKey);
 }
 
 function saveJobs(jobs) {
-  localStorage.setItem(storageKey, JSON.stringify(jobs));
+  writeStorage(jobStorageKey, jobs);
+}
+
+function getCustomers() {
+  return readStorage(customerStorageKey);
+}
+
+function saveCustomers(customers) {
+  writeStorage(customerStorageKey, customers);
 }
 
 function setActiveScreen(screenName) {
@@ -62,6 +81,36 @@ function renderJobs() {
     .join('');
 }
 
+function renderCustomers() {
+  const customers = getCustomers();
+
+  if (!customers.length) {
+    customerList.innerHTML = `
+      <article class="job-card">
+        <div>
+          <h3>No saved customers yet</h3>
+          <p>Add your first customer with the form above.</p>
+        </div>
+      </article>
+    `;
+    return;
+  }
+
+  customerList.innerHTML = customers
+    .map(
+      (customer) => `
+        <article class="job-card">
+          <div>
+            <h3>${customer.name}</h3>
+            <p>${customer.phone || 'No phone'} · ${customer.address || 'No address saved'}</p>
+          </div>
+          <span class="status-badge">Customer</span>
+        </article>
+      `
+    )
+    .join('');
+}
+
 navButtons.forEach((button) => {
   button.addEventListener('click', () => {
     setActiveScreen(button.dataset.screen);
@@ -92,4 +141,25 @@ jobForm.addEventListener('submit', (event) => {
   renderJobs();
 });
 
+customerForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const customers = getCustomers();
+  const newCustomer = {
+    id: crypto.randomUUID(),
+    name: document.getElementById('newCustomerName').value.trim(),
+    phone: document.getElementById('newCustomerPhone').value.trim(),
+    email: document.getElementById('newCustomerEmail').value.trim(),
+    address: document.getElementById('newCustomerAddress').value.trim(),
+    notes: document.getElementById('newCustomerNotes').value.trim(),
+    createdAt: new Date().toISOString(),
+  };
+
+  customers.unshift(newCustomer);
+  saveCustomers(customers);
+  customerForm.reset();
+  renderCustomers();
+});
+
 renderJobs();
+renderCustomers();

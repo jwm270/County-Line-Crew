@@ -13,18 +13,22 @@
         <p class="eyebrow">County Line Crew</p>
         <h1>Schedule and track property work.</h1>
       </div>
-      <button class="icon-button" aria-label="Settings">☰</button>
+      <button class="icon-button" id="adminAccessButton" aria-label="Admin access">Admin</button>
     </header>
 
     <main>
       <section class="hero-card">
         <p class="hero-label">Public Booking</p>
         <h2 id="heroJobCount">Book mowing, cleanup, or property work.</h2>
-        <p>Customers use Book only. Admin and employee areas are separate.</p>
+        <p id="heroHelpText">Customers can request service here. Admin tools are hidden unless admin mode is opened.</p>
         <button class="primary-button" data-screen="book">Book a Job</button>
       </section>
 
-      <section class="quick-actions" aria-label="Quick actions">
+      <section class="quick-actions public-actions" aria-label="Public quick actions">
+        <button data-screen="book">Book</button>
+      </section>
+
+      <section class="quick-actions admin-actions hidden" aria-label="Admin quick actions">
         <button data-screen="book">Book</button>
         <button data-screen="employee">Employee</button>
         <button data-screen="home">Admin</button>
@@ -90,7 +94,7 @@
         </form>
       </section>
 
-      <section class="screen" id="screen-employee">
+      <section class="screen admin-screen" id="screen-employee">
         <div class="section-heading">
           <h2>Employee Availability</h2>
           <span>Worker schedule</span>
@@ -123,7 +127,7 @@
         <div id="availabilityList" class="list-stack"></div>
       </section>
 
-      <section class="screen" id="screen-home">
+      <section class="screen admin-screen" id="screen-home">
         <div class="section-heading">
           <h2>Admin Dashboard</h2>
           <span>Live totals</span>
@@ -143,7 +147,7 @@
         <div id="dashboardJobList" class="list-stack"></div>
       </section>
 
-      <section class="screen" id="screen-jobs">
+      <section class="screen admin-screen" id="screen-jobs">
         <div class="section-heading">
           <h2>Jobs</h2>
           <span>Work orders</span>
@@ -202,7 +206,7 @@
         <div id="jobList" class="list-stack"></div>
       </section>
 
-      <section class="screen" id="screen-customers">
+      <section class="screen admin-screen" id="screen-customers">
         <div class="section-heading">
           <h2>Customers</h2>
           <span>Contacts</span>
@@ -235,7 +239,7 @@
         <div id="customerList" class="list-stack"></div>
       </section>
 
-      <section class="screen" id="screen-invoice">
+      <section class="screen admin-screen" id="screen-invoice">
         <div class="section-heading">
           <h2>Invoice</h2>
           <span>Preview</span>
@@ -248,8 +252,12 @@
       </section>
     </main>
 
-    <nav class="bottom-nav" aria-label="Main navigation">
+    <nav class="bottom-nav public-nav" aria-label="Customer navigation">
       <button class="active" data-screen="book">Book</button>
+    </nav>
+
+    <nav class="bottom-nav admin-nav hidden" aria-label="Admin navigation">
+      <button data-screen="book">Book</button>
       <button data-screen="employee">Employee</button>
       <button data-screen="home">Admin</button>
       <button data-screen="jobs">Jobs</button>

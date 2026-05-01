@@ -58,6 +58,23 @@ function formatStatus(value) {
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
+function updateJob(jobId, updates) {
+  const jobs = getJobs().map((job) => {
+    if (job.id !== jobId) {
+      return job;
+    }
+
+    return {
+      ...job,
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    };
+  });
+
+  saveJobs(jobs);
+  renderJobs();
+}
+
 function renderCustomerOptions() {
   const customers = getCustomers();
 
@@ -93,13 +110,19 @@ function renderJobs() {
   jobList.innerHTML = jobs
     .map(
       (job) => `
-        <article class="job-card">
-          <div>
-            <h3>${job.customerName}</h3>
-            <p>${job.serviceType} · ${job.jobDate} · ${formatCurrency(job.jobAmount)}</p>
-            <p>${formatStatus(job.jobStatus || 'scheduled')} · ${formatStatus(job.paymentStatus || 'unpaid')}</p>
+        <article class="job-card job-card-stacked">
+          <div class="job-card-top">
+            <div>
+              <h3>${job.customerName}</h3>
+              <p>${job.serviceType} · ${job.jobDate} · ${formatCurrency(job.jobAmount)}</p>
+              <p>${formatStatus(job.jobStatus || 'scheduled')} · ${formatStatus(job.paymentStatus || 'unpaid')}</p>
+            </div>
+            <span class="status-badge">${formatStatus(job.paymentStatus || 'unpaid')}</span>
           </div>
-          <span class="status-badge">${formatStatus(job.paymentStatus || 'unpaid')}</span>
+          <div class="job-actions">
+            <button type="button" data-action="mark-completed" data-job-id="${job.id}">Mark Completed</button>
+            <button type="button" data-action="mark-paid" data-job-id="${job.id}">Mark Paid</button>
+          </div>
         </article>
       `
     )
@@ -145,6 +168,22 @@ navButtons.forEach((button) => {
 quickAddJobButton.addEventListener('click', () => {
   setActiveScreen('jobs');
   jobCustomerSelect.focus();
+});
+
+jobList.addEventListener('click', (event) => {
+  const button = event.target.closest('button[data-action]');
+
+  if (!button) {
+    return;
+  }
+
+  if (button.dataset.action === 'mark-completed') {
+    updateJob(button.dataset.jobId, { jobStatus: 'completed' });
+  }
+
+  if (button.dataset.action === 'mark-paid') {
+    updateJob(button.dataset.jobId, { paymentStatus: 'paid' });
+  }
 });
 
 jobForm.addEventListener('submit', (event) => {

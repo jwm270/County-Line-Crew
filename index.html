@@ -19,7 +19,7 @@
     <main>
       <section class="hero-card">
         <p class="hero-label">Today</p>
-        <h2>3 jobs scheduled</h2>
+        <h2 id="heroJobCount">0 jobs scheduled</h2>
         <p>Mowing, cleanup, and handyman work in one simple phone dashboard.</p>
         <button class="primary-button" id="quickAddJob">Add New Job</button>
       </section>
@@ -33,27 +33,21 @@
       <section class="screen active" id="screen-home">
         <div class="section-heading">
           <h2>Dashboard</h2>
-          <span>Prototype</span>
+          <span>Live totals</span>
         </div>
 
         <div class="stat-grid">
           <article class="stat-card">
-            <strong>3</strong>
+            <strong id="openJobCount">0</strong>
             <span>Open Jobs</span>
           </article>
           <article class="stat-card">
-            <strong>$1,250</strong>
+            <strong id="unpaidTotal">$0.00</strong>
             <span>Unpaid</span>
           </article>
         </div>
 
-        <article class="job-card">
-          <div>
-            <h3>Fairgrounds mowing</h3>
-            <p>Batesville, AR · $550 · Scheduled</p>
-          </div>
-          <span class="status-badge">Today</span>
-        </article>
+        <div id="dashboardJobList" class="list-stack"></div>
       </section>
 
       <section class="screen" id="screen-jobs">

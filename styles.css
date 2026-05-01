@@ -188,12 +188,23 @@ button {
   margin-bottom: 12px;
 }
 
+.job-card-stacked {
+  display: block;
+}
+
+.job-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
 .job-card h3 {
   margin: 0 0 6px;
 }
 
 .job-card p {
-  margin: 0;
+  margin: 0 0 4px;
   color: var(--muted);
   font-size: 0.92rem;
 }
@@ -206,6 +217,23 @@ button {
   font-size: 0.78rem;
   font-weight: 700;
   white-space: nowrap;
+}
+
+.job-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.job-actions button {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 11px 10px;
+  background: #fffdf8;
+  color: var(--accent-dark);
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
 .card-form {

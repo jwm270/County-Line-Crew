@@ -10,7 +10,7 @@
   <div class="app-shell">
     <header class="app-header">
       <div>
-        <p class="eyebrow">County Line Crew</p>
+        <p class="eyebrow" id="appBrandName">County Line Crew</p>
         <h1>Schedule and track property work.</h1>
       </div>
       <button class="icon-button" id="adminAccessButton" aria-label="Admin access">Admin</button>
@@ -239,6 +239,41 @@
         <div id="customerList" class="list-stack"></div>
       </section>
 
+      <section class="screen admin-screen" id="screen-settings">
+        <div class="section-heading">
+          <h2>Company Settings</h2>
+          <span>Invoice info</span>
+        </div>
+
+        <form class="card-form" id="settingsForm">
+          <label>
+            Company Name
+            <input type="text" id="settingsCompanyName" placeholder="Company name" required />
+          </label>
+          <label>
+            Owner / Contact Name
+            <input type="text" id="settingsOwnerName" placeholder="Owner or contact name" />
+          </label>
+          <label>
+            Address Line 1
+            <input type="text" id="settingsAddressLine1" placeholder="Street address" />
+          </label>
+          <label>
+            Address Line 2
+            <input type="text" id="settingsAddressLine2" placeholder="City, State ZIP" />
+          </label>
+          <label>
+            Phone
+            <input type="tel" id="settingsPhone" placeholder="Business phone" />
+          </label>
+          <label>
+            Email
+            <input type="email" id="settingsEmail" placeholder="Business email" />
+          </label>
+          <button class="primary-button" type="submit">Save Company Info</button>
+        </form>
+      </section>
+
       <section class="screen admin-screen" id="screen-invoice">
         <div class="section-heading">
           <h2>Invoice</h2>
@@ -262,7 +297,7 @@
       <button data-screen="home">Admin</button>
       <button data-screen="jobs">Jobs</button>
       <button data-screen="customers">Customers</button>
-      <button data-screen="invoice">Invoice</button>
+      <button data-screen="settings">Settings</button>
     </nav>
   </div>
 

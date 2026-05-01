@@ -8,6 +8,8 @@
   --accent-dark: #542913;
   --soft: #efe4d4;
   --success: #276749;
+  --danger: #9b2c2c;
+  --danger-soft: #fff1f1;
 }
 
 * {
@@ -234,6 +236,12 @@ button {
   color: var(--accent-dark);
   font-size: 0.9rem;
   font-weight: 700;
+}
+
+.job-actions .danger-button {
+  grid-column: 1 / -1;
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 
 .card-form {

@@ -289,6 +289,11 @@ button {
   justify-content: space-between;
   border-top: 1px solid var(--line);
   padding: 14px 0;
+  gap: 18px;
+}
+
+.invoice-row strong {
+  text-align: right;
 }
 
 .bottom-nav {
@@ -319,4 +324,69 @@ button {
 .bottom-nav button.active {
   background: var(--accent);
   color: #ffffff;
+}
+
+@media print {
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
+
+  .app-header,
+  .hero-card,
+  .quick-actions,
+  .bottom-nav,
+  #screen-home,
+  #screen-jobs,
+  #screen-customers,
+  .section-heading,
+  .secondary-button {
+    display: none !important;
+  }
+
+  .app-shell {
+    max-width: none;
+    min-height: auto;
+    padding: 0;
+    margin: 0;
+    background: #ffffff;
+  }
+
+  .screen {
+    display: none !important;
+  }
+
+  #screen-invoice {
+    display: block !important;
+  }
+
+  .invoice-card {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0.5in;
+    background: #ffffff;
+  }
+
+  .invoice-card h2 {
+    font-size: 24pt;
+    margin-bottom: 10pt;
+  }
+
+  .invoice-card p,
+  .invoice-row {
+    font-size: 12pt;
+  }
+
+  .invoice-row {
+    border-top: 1px solid #000000;
+    padding: 12pt 0;
+  }
+
+  .eyebrow {
+    color: #000000;
+    font-size: 10pt;
+  }
 }

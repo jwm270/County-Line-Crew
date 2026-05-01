@@ -5,6 +5,7 @@ const publicActions = document.querySelector('.public-actions');
 const adminActions = document.querySelector('.admin-actions');
 const publicNav = document.querySelector('.public-nav');
 const adminNav = document.querySelector('.admin-nav');
+const appBrandName = document.getElementById('appBrandName');
 const quickAddJobButton = document.getElementById('quickAddJob');
 const heroJobCount = document.getElementById('heroJobCount');
 const openJobCount = document.getElementById('openJobCount');
@@ -18,21 +19,23 @@ const jobList = document.getElementById('jobList');
 const jobCustomerSelect = document.getElementById('jobCustomerSelect');
 const customerForm = document.getElementById('customerForm');
 const customerList = document.getElementById('customerList');
+const settingsForm = document.getElementById('settingsForm');
 const invoiceCard = document.getElementById('invoiceCard');
 
 const jobStorageKey = 'countyLineCrewJobs';
 const customerStorageKey = 'countyLineCrewCustomers';
 const availabilityStorageKey = 'countyLineCrewAvailability';
+const companySettingsStorageKey = 'countyLineCrewCompanySettings';
 
 let adminMode = false;
 
-const businessInfo = {
-  name: 'County Line Crew',
-  owner: 'Jimmy Moore',
-  addressLine1: '725 Big T Road',
-  addressLine2: 'Batesville, AR 72501',
-  phone: '870-805-0452',
-  email: 'jwm270@gmail.com',
+const defaultCompanySettings = {
+  name: 'Your Company Name',
+  owner: 'Owner / Contact Name',
+  addressLine1: 'Business Address Line 1',
+  addressLine2: 'City, State ZIP',
+  phone: 'Business Phone',
+  email: 'Business Email',
 };
 
 function readStorage(key) {
@@ -66,6 +69,27 @@ function getAvailability() {
 
 function saveAvailability(items) {
   writeStorage(availabilityStorageKey, items);
+}
+
+function getCompanySettings() {
+  const savedSettings = localStorage.getItem(companySettingsStorageKey);
+  return savedSettings ? { ...defaultCompanySettings, ...JSON.parse(savedSettings) } : defaultCompanySettings;
+}
+
+function saveCompanySettings(settings) {
+  localStorage.setItem(companySettingsStorageKey, JSON.stringify(settings));
+}
+
+function renderCompanySettings() {
+  const settings = getCompanySettings();
+
+  appBrandName.textContent = settings.name;
+  document.getElementById('settingsCompanyName').value = settings.name;
+  document.getElementById('settingsOwnerName').value = settings.owner;
+  document.getElementById('settingsAddressLine1').value = settings.addressLine1;
+  document.getElementById('settingsAddressLine2').value = settings.addressLine2;
+  document.getElementById('settingsPhone').value = settings.phone;
+  document.getElementById('settingsEmail').value = settings.email;
 }
 
 function setActiveScreen(screenName) {
@@ -199,6 +223,7 @@ function renderInvoice(jobId) {
   const customer = job
     ? getCustomers().find((savedCustomer) => savedCustomer.id === job.customerId)
     : null;
+  const companySettings = getCompanySettings();
 
   if (!job) {
     invoiceCard.innerHTML = `
@@ -212,11 +237,11 @@ function renderInvoice(jobId) {
   invoiceCard.innerHTML = `
     <div class="invoice-business">
       <p class="eyebrow">Invoice</p>
-      <h2>${businessInfo.name}</h2>
-      <p>${businessInfo.owner}</p>
-      <p>${businessInfo.addressLine1}</p>
-      <p>${businessInfo.addressLine2}</p>
-      <p>${businessInfo.phone} · ${businessInfo.email}</p>
+      <h2>${companySettings.name}</h2>
+      <p>${companySettings.owner}</p>
+      <p>${companySettings.addressLine1}</p>
+      <p>${companySettings.addressLine2}</p>
+      <p>${companySettings.phone} · ${companySettings.email}</p>
     </div>
     <div class="invoice-row"><span>Bill To</span><strong>${job.customerName}</strong></div>
     <div class="invoice-row"><span>Service</span><strong>${job.serviceType}</strong></div>
@@ -538,7 +563,26 @@ customerForm.addEventListener('submit', (event) => {
   renderCustomerOptions();
 });
 
+settingsForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const settings = {
+    name: document.getElementById('settingsCompanyName').value.trim(),
+    owner: document.getElementById('settingsOwnerName').value.trim(),
+    addressLine1: document.getElementById('settingsAddressLine1').value.trim(),
+    addressLine2: document.getElementById('settingsAddressLine2').value.trim(),
+    phone: document.getElementById('settingsPhone').value.trim(),
+    email: document.getElementById('settingsEmail').value.trim(),
+  };
+
+  saveCompanySettings(settings);
+  renderCompanySettings();
+  renderInvoice();
+  alert('Company info saved.');
+});
+
 setAdminMode(false);
+renderCompanySettings();
 refreshJobViews();
 renderCustomers();
 renderCustomerOptions();

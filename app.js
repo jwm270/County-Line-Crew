@@ -11,6 +11,15 @@ const invoiceCard = document.getElementById('invoiceCard');
 const jobStorageKey = 'countyLineCrewJobs';
 const customerStorageKey = 'countyLineCrewCustomers';
 
+const businessInfo = {
+  name: 'County Line Crew',
+  owner: 'Jimmy Moore',
+  addressLine1: '725 Big T Road',
+  addressLine2: 'Batesville, AR 72501',
+  phone: '870-805-0452',
+  email: 'jwm270@gmail.com',
+};
+
 function readStorage(key) {
   const savedItems = localStorage.getItem(key);
   return savedItems ? JSON.parse(savedItems) : [];
@@ -115,16 +124,23 @@ function renderInvoice(jobId) {
   }
 
   invoiceCard.innerHTML = `
-    <p class="eyebrow">Invoice Preview</p>
-    <h2>${job.customerName}</h2>
-    <p>${job.serviceType}</p>
+    <div class="invoice-business">
+      <p class="eyebrow">Invoice</p>
+      <h2>${businessInfo.name}</h2>
+      <p>${businessInfo.owner}</p>
+      <p>${businessInfo.addressLine1}</p>
+      <p>${businessInfo.addressLine2}</p>
+      <p>${businessInfo.phone} · ${businessInfo.email}</p>
+    </div>
+    <div class="invoice-row"><span>Bill To</span><strong>${job.customerName}</strong></div>
+    <div class="invoice-row"><span>Service</span><strong>${job.serviceType}</strong></div>
     <div class="invoice-row"><span>Invoice #</span><strong>${getInvoiceNumber(job)}</strong></div>
     <div class="invoice-row"><span>Date</span><strong>${formatDate(job.jobDate)}</strong></div>
     <div class="invoice-row"><span>Amount</span><strong>${formatCurrency(job.jobAmount)}</strong></div>
     <div class="invoice-row"><span>Job Status</span><strong>${formatStatus(job.jobStatus || 'scheduled')}</strong></div>
     <div class="invoice-row"><span>Payment</span><strong>${formatStatus(job.paymentStatus || 'unpaid')}</strong></div>
-    <div class="invoice-row"><span>Phone</span><strong>${customer?.phone || 'Not saved'}</strong></div>
-    <div class="invoice-row"><span>Address</span><strong>${customer?.address || 'Not saved'}</strong></div>
+    <div class="invoice-row"><span>Customer Phone</span><strong>${customer?.phone || 'Not saved'}</strong></div>
+    <div class="invoice-row"><span>Customer Address</span><strong>${customer?.address || 'Not saved'}</strong></div>
     <button class="secondary-button" type="button" onclick="window.print()">Print Invoice</button>
   `;
 }

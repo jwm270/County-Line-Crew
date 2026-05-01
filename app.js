@@ -75,6 +75,12 @@ function updateJob(jobId, updates) {
   renderJobs();
 }
 
+function deleteJob(jobId) {
+  const jobs = getJobs().filter((job) => job.id !== jobId);
+  saveJobs(jobs);
+  renderJobs();
+}
+
 function renderCustomerOptions() {
   const customers = getCustomers();
 
@@ -122,6 +128,7 @@ function renderJobs() {
           <div class="job-actions">
             <button type="button" data-action="mark-completed" data-job-id="${job.id}">Mark Completed</button>
             <button type="button" data-action="mark-paid" data-job-id="${job.id}">Mark Paid</button>
+            <button class="danger-button" type="button" data-action="delete-job" data-job-id="${job.id}">Delete Job</button>
           </div>
         </article>
       `
@@ -183,6 +190,10 @@ jobList.addEventListener('click', (event) => {
 
   if (button.dataset.action === 'mark-paid') {
     updateJob(button.dataset.jobId, { paymentStatus: 'paid' });
+  }
+
+  if (button.dataset.action === 'delete-job') {
+    deleteJob(button.dataset.jobId);
   }
 });
 

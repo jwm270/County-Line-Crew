@@ -1,6 +1,10 @@
 const screens = document.querySelectorAll('.screen');
 const navButtons = document.querySelectorAll('[data-screen]');
 const quickAddJobButton = document.getElementById('quickAddJob');
+const heroJobCount = document.getElementById('heroJobCount');
+const openJobCount = document.getElementById('openJobCount');
+const unpaidTotal = document.getElementById('unpaidTotal');
+const dashboardJobList = document.getElementById('dashboardJobList');
 const jobForm = document.getElementById('jobForm');
 const jobList = document.getElementById('jobList');
 const jobCustomerSelect = document.getElementById('jobCustomerSelect');
@@ -56,7 +60,7 @@ function setActiveScreen(screenName) {
 }
 
 function formatCurrency(value) {
-  return Number(value).toLocaleString('en-US', {
+  return Number(value || 0).toLocaleString('en-US', {
     style: 'currency',
     currency: 'USD',
   });
@@ -85,6 +89,11 @@ function getInvoiceNumber(job) {
   return job.invoiceNumber || `CLC-${job.id.slice(0, 5).toUpperCase()}`;
 }
 
+function refreshJobViews() {
+  renderDashboard();
+  renderJobs();
+}
+
 function updateJob(jobId, updates) {
   const jobs = getJobs().map((job) => {
     if (job.id !== jobId) {
@@ -99,13 +108,57 @@ function updateJob(jobId, updates) {
   });
 
   saveJobs(jobs);
-  renderJobs();
+  refreshJobViews();
 }
 
 function deleteJob(jobId) {
   const jobs = getJobs().filter((job) => job.id !== jobId);
   saveJobs(jobs);
-  renderJobs();
+  refreshJobViews();
+}
+
+function renderDashboard() {
+  const jobs = getJobs();
+  const openJobs = jobs.filter((job) => !['completed', 'canceled'].includes(job.jobStatus));
+  const unpaidJobs = jobs.filter((job) => job.paymentStatus !== 'paid');
+  const unpaidAmount = unpaidJobs.reduce((total, job) => total + Number(job.jobAmount || 0), 0);
+
+  heroJobCount.textContent = `${openJobs.length} ${openJobs.length === 1 ? 'job' : 'jobs'} scheduled`;
+  openJobCount.textContent = openJobs.length;
+  unpaidTotal.textContent = formatCurrency(unpaidAmount);
+
+  if (!jobs.length) {
+    dashboardJobList.innerHTML = `
+      <article class="job-card">
+        <div>
+          <h3>No jobs yet</h3>
+          <p>Add a customer, then add your first job.</p>
+        </div>
+      </article>
+    `;
+    return;
+  }
+
+  dashboardJobList.innerHTML = jobs.slice(0, 5)
+    .map(
+      (job) => `
+        <article class="job-card job-card-stacked">
+          <div class="job-card-top">
+            <div>
+              <h3>${job.customerName}</h3>
+              <p>${job.serviceType} · ${formatDate(job.jobDate)} · ${formatCurrency(job.jobAmount)}</p>
+              <p>${formatStatus(job.jobStatus || 'scheduled')} · ${formatStatus(job.paymentStatus || 'unpaid')}</p>
+            </div>
+            <span class="status-badge">${formatStatus(job.paymentStatus || 'unpaid')}</span>
+          </div>
+          <div class="job-actions">
+            <button type="button" data-action="view-invoice" data-job-id="${job.id}">View Invoice</button>
+            <button class="danger-button" type="button" data-action="delete-job" data-job-id="${job.id}">Delete Job</button>
+          </div>
+        </article>
+      `
+    )
+    .join('');
 }
 
 function renderInvoice(jobId) {
@@ -233,18 +286,7 @@ function renderCustomers() {
     .join('');
 }
 
-navButtons.forEach((button) => {
-  button.addEventListener('click', () => {
-    setActiveScreen(button.dataset.screen);
-  });
-});
-
-quickAddJobButton.addEventListener('click', () => {
-  setActiveScreen('jobs');
-  jobCustomerSelect.focus();
-});
-
-jobList.addEventListener('click', (event) => {
+function handleJobAction(event) {
   const button = event.target.closest('button[data-action]');
 
   if (!button) {
@@ -267,7 +309,21 @@ jobList.addEventListener('click', (event) => {
   if (button.dataset.action === 'delete-job') {
     deleteJob(button.dataset.jobId);
   }
+}
+
+navButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    setActiveScreen(button.dataset.screen);
+  });
 });
+
+quickAddJobButton.addEventListener('click', () => {
+  setActiveScreen('jobs');
+  jobCustomerSelect.focus();
+});
+
+jobList.addEventListener('click', handleJobAction);
+dashboardJobList.addEventListener('click', handleJobAction);
 
 jobForm.addEventListener('submit', (event) => {
   event.preventDefault();
@@ -299,7 +355,7 @@ jobForm.addEventListener('submit', (event) => {
   jobs.unshift(newJob);
   saveJobs(jobs);
   jobForm.reset();
-  renderJobs();
+  refreshJobViews();
   renderCustomerOptions();
 });
 
@@ -324,7 +380,7 @@ customerForm.addEventListener('submit', (event) => {
   renderCustomerOptions();
 });
 
-renderJobs();
+refreshJobViews();
 renderCustomers();
 renderCustomerOptions();
 renderInvoice();

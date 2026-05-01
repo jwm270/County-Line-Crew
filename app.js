@@ -52,6 +52,12 @@ function formatCurrency(value) {
   });
 }
 
+function formatStatus(value) {
+  return value
+    .replace('_', ' ')
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
 function renderCustomerOptions() {
   const customers = getCustomers();
 
@@ -91,8 +97,9 @@ function renderJobs() {
           <div>
             <h3>${job.customerName}</h3>
             <p>${job.serviceType} · ${job.jobDate} · ${formatCurrency(job.jobAmount)}</p>
+            <p>${formatStatus(job.jobStatus || 'scheduled')} · ${formatStatus(job.paymentStatus || 'unpaid')}</p>
           </div>
-          <span class="status-badge">Saved</span>
+          <span class="status-badge">${formatStatus(job.paymentStatus || 'unpaid')}</span>
         </article>
       `
     )
@@ -160,6 +167,8 @@ jobForm.addEventListener('submit', (event) => {
     serviceType: document.getElementById('serviceType').value,
     jobDate: document.getElementById('jobDate').value,
     jobAmount: document.getElementById('jobAmount').value,
+    jobStatus: document.getElementById('jobStatus').value,
+    paymentStatus: document.getElementById('paymentStatus').value,
     createdAt: new Date().toISOString(),
   };
 

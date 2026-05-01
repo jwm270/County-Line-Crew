@@ -18,21 +18,114 @@
 
     <main>
       <section class="hero-card">
-        <p class="hero-label">Today</p>
-        <h2 id="heroJobCount">0 jobs scheduled</h2>
-        <p>Mowing, cleanup, and handyman work in one simple phone dashboard.</p>
-        <button class="primary-button" id="quickAddJob">Add New Job</button>
+        <p class="hero-label">Public Booking</p>
+        <h2 id="heroJobCount">Book mowing, cleanup, or property work.</h2>
+        <p>Customers use Book only. Admin and employee areas are separate.</p>
+        <button class="primary-button" data-screen="book">Book a Job</button>
       </section>
 
       <section class="quick-actions" aria-label="Quick actions">
-        <button data-screen="jobs">Jobs</button>
-        <button data-screen="customers">Customers</button>
-        <button data-screen="invoice">Invoice</button>
+        <button data-screen="book">Book</button>
+        <button data-screen="employee">Employee</button>
+        <button data-screen="home">Admin</button>
       </section>
 
-      <section class="screen active" id="screen-home">
+      <section class="screen active" id="screen-book">
         <div class="section-heading">
-          <h2>Dashboard</h2>
+          <h2>Book a Job</h2>
+          <span>Customer request</span>
+        </div>
+
+        <form class="card-form" id="bookingForm">
+          <label>
+            Service Needed
+            <select id="bookingService">
+              <option>Mowing</option>
+              <option>Cleanup</option>
+              <option>Handyman</option>
+              <option>Hauling</option>
+              <option>Property check</option>
+              <option>Custom work</option>
+            </select>
+          </label>
+          <label>
+            Preferred Employee (optional)
+            <input type="text" id="bookingPreferredEmployee" placeholder="Leave blank if no preference" />
+          </label>
+          <label>
+            Requested Date
+            <input type="date" id="bookingDate" required />
+          </label>
+          <label>
+            Requested Time
+            <select id="bookingTime">
+              <option>8:00 AM</option>
+              <option>10:00 AM</option>
+              <option>12:00 PM</option>
+              <option>2:00 PM</option>
+              <option>4:00 PM</option>
+            </select>
+          </label>
+          <label>
+            Name
+            <input type="text" id="bookingName" placeholder="Your name" required />
+          </label>
+          <label>
+            Phone
+            <input type="tel" id="bookingPhone" placeholder="870-555-1234" required />
+          </label>
+          <label>
+            Email
+            <input type="email" id="bookingEmail" placeholder="you@example.com" />
+          </label>
+          <label>
+            Job Address
+            <input type="text" id="bookingAddress" placeholder="Where is the job?" required />
+          </label>
+          <label>
+            Job Notes
+            <textarea id="bookingNotes" placeholder="Describe the work needed."></textarea>
+          </label>
+          <button class="primary-button" type="submit">Submit Booking Request</button>
+        </form>
+      </section>
+
+      <section class="screen" id="screen-employee">
+        <div class="section-heading">
+          <h2>Employee Availability</h2>
+          <span>Worker schedule</span>
+        </div>
+
+        <form class="card-form" id="availabilityForm">
+          <label>
+            Employee Name
+            <input type="text" id="employeeName" placeholder="Employee name" required />
+          </label>
+          <label>
+            Available Date
+            <input type="date" id="availableDate" required />
+          </label>
+          <label>
+            Start Time
+            <input type="time" id="availableStart" required />
+          </label>
+          <label>
+            End Time
+            <input type="time" id="availableEnd" required />
+          </label>
+          <label>
+            Notes
+            <input type="text" id="availabilityNotes" placeholder="Area, limits, preferred work, etc." />
+          </label>
+          <button class="primary-button" type="submit">Save Availability</button>
+        </form>
+
+        <div id="availabilityList" class="list-stack"></div>
+      </section>
+
+      <section class="screen" id="screen-home">
+        <div class="section-heading">
+          <h2>Admin Dashboard</h2>
           <span>Live totals</span>
         </div>
 
@@ -156,7 +249,9 @@
     </main>
 
     <nav class="bottom-nav" aria-label="Main navigation">
-      <button class="active" data-screen="home">Home</button>
+      <button class="active" data-screen="book">Book</button>
+      <button data-screen="employee">Employee</button>
+      <button data-screen="home">Admin</button>
       <button data-screen="jobs">Jobs</button>
       <button data-screen="customers">Customers</button>
       <button data-screen="invoice">Invoice</button>

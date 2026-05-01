@@ -134,6 +134,7 @@ function renderInvoice(jobId) {
     </div>
     <div class="invoice-row"><span>Bill To</span><strong>${job.customerName}</strong></div>
     <div class="invoice-row"><span>Service</span><strong>${job.serviceType}</strong></div>
+    <div class="invoice-row"><span>Description</span><strong>${job.description || 'Not saved'}</strong></div>
     <div class="invoice-row"><span>Invoice #</span><strong>${getInvoiceNumber(job)}</strong></div>
     <div class="invoice-row"><span>Date</span><strong>${formatDate(job.jobDate)}</strong></div>
     <div class="invoice-row"><span>Amount</span><strong>${formatCurrency(job.jobAmount)}</strong></div>
@@ -185,6 +186,7 @@ function renderJobs() {
             <div>
               <h3>${job.customerName}</h3>
               <p>${job.serviceType} · ${formatDate(job.jobDate)} · ${formatCurrency(job.jobAmount)}</p>
+              <p>${job.description || 'No description saved'}</p>
               <p>${getInvoiceNumber(job)} · ${formatStatus(job.jobStatus || 'scheduled')} · ${formatStatus(job.paymentStatus || 'unpaid')}</p>
             </div>
             <span class="status-badge">${formatStatus(job.paymentStatus || 'unpaid')}</span>
@@ -286,6 +288,7 @@ jobForm.addEventListener('submit', (event) => {
     customerId: selectedCustomer.id,
     customerName: selectedCustomer.name,
     serviceType: document.getElementById('serviceType').value,
+    description: document.getElementById('jobDescription').value.trim(),
     jobDate: document.getElementById('jobDate').value,
     jobAmount: document.getElementById('jobAmount').value,
     jobStatus: document.getElementById('jobStatus').value,

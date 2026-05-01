@@ -3,6 +3,7 @@ const navButtons = document.querySelectorAll('[data-screen]');
 const quickAddJobButton = document.getElementById('quickAddJob');
 const jobForm = document.getElementById('jobForm');
 const jobList = document.getElementById('jobList');
+const jobCustomerSelect = document.getElementById('jobCustomerSelect');
 const customerForm = document.getElementById('customerForm');
 const customerList = document.getElementById('customerList');
 
@@ -49,6 +50,23 @@ function formatCurrency(value) {
     style: 'currency',
     currency: 'USD',
   });
+}
+
+function renderCustomerOptions() {
+  const customers = getCustomers();
+
+  if (!customers.length) {
+    jobCustomerSelect.innerHTML = '<option value="">Add a customer first</option>';
+    jobCustomerSelect.disabled = true;
+    return;
+  }
+
+  jobCustomerSelect.disabled = false;
+  jobCustomerSelect.innerHTML = '<option value="">Select customer</option>' + customers
+    .map(
+      (customer) => `<option value="${customer.id}">${customer.name}</option>`
+    )
+    .join('');
 }
 
 function renderJobs() {
@@ -119,16 +137,26 @@ navButtons.forEach((button) => {
 
 quickAddJobButton.addEventListener('click', () => {
   setActiveScreen('jobs');
-  document.getElementById('customerName').focus();
+  jobCustomerSelect.focus();
 });
 
 jobForm.addEventListener('submit', (event) => {
   event.preventDefault();
 
+  const selectedCustomer = getCustomers().find(
+    (customer) => customer.id === jobCustomerSelect.value
+  );
+
+  if (!selectedCustomer) {
+    alert('Add and select a customer before saving a job.');
+    return;
+  }
+
   const jobs = getJobs();
   const newJob = {
     id: crypto.randomUUID(),
-    customerName: document.getElementById('customerName').value.trim(),
+    customerId: selectedCustomer.id,
+    customerName: selectedCustomer.name,
     serviceType: document.getElementById('serviceType').value,
     jobDate: document.getElementById('jobDate').value,
     jobAmount: document.getElementById('jobAmount').value,
@@ -139,6 +167,7 @@ jobForm.addEventListener('submit', (event) => {
   saveJobs(jobs);
   jobForm.reset();
   renderJobs();
+  renderCustomerOptions();
 });
 
 customerForm.addEventListener('submit', (event) => {
@@ -159,7 +188,9 @@ customerForm.addEventListener('submit', (event) => {
   saveCustomers(customers);
   customerForm.reset();
   renderCustomers();
+  renderCustomerOptions();
 });
 
 renderJobs();
 renderCustomers();
+renderCustomerOptions();
